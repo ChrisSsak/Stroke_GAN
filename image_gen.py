@@ -7,13 +7,18 @@ Original file is located at
     https://colab.research.google.com/drive/1ah-TH8CFnsbXLMr0ljfaJpbvCNfAqgam
 """
 
-import cv2  # STROKE GEN FOR RENDERER
+import cv2  
 import numpy as np
+import tensorflow as tf
+import tensorflow_addons as tfa
 
 def normal(x, width):
     return (int)(x * (width - 1) + 0.5)
 
 def draw(x0, y0, x1, y1, x2, y2, z0, z2, w0, w2, width=216):
+    """ for renderer stroke dataset 
+        inputs: stroke params [0,1]
+        output: stroke img"""
    # x0, y0, x1, y1, x2, y2, z0, z2, w0, w2 = f
     x1 = x0 + (x2 - x0) * x1
     y1 = y0 + (y2 - y0) * y1
@@ -40,10 +45,9 @@ def generate_params(gen,data):
   params=gen(data[None])
   return params
 
-import tensorflow as tf
-import tensorflow_addons as tfa
 
-def generate_image(initial,params): #OVERLAY B&W STROKE
+def generate_image(initial,params): 
+     """OVERLAY B&W STROKE"""
   output=renderer(params[0])
   output/=0.9
   for i in range(1,len(params)):
@@ -53,7 +57,8 @@ def generate_image(initial,params): #OVERLAY B&W STROKE
   image = output[0,...] * initial[:, 0:]
   return image
 
-def generate_image_rgb(initial,params):#OVERLAY RGB STROKE
+def generate_image_rgb(initial,params):
+    """OVERLAY RGB STROKE"""
   output=renderer(params[0][0][:10][None])
   r=params[0][0][-3]
   g=params[0][0][-2]
